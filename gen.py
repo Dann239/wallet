@@ -8,11 +8,13 @@ import json
 
 mnemonic_override = ""
 
-if mnemonic_override == "":
-    entropy = BIP39Entropy.generate(160)
-else:
-    entropy = BIP39Mnemonic.decode(mnemonic_override)
+entropy = BIP39Entropy(
+    BIP39Entropy.generate(160)
+    if mnemonic_override == "" else
+    BIP39Mnemonic.decode(mnemonic_override)
+)
 
-wallet = HDWallet(cryptocurrency=Ethereum).from_entropy(BIP39Entropy(entropy)).from_derivation(BIP44Derivation())
+derivation = BIP44Derivation(coin_type=Ethereum.COIN_TYPE)
+wallet = HDWallet(cryptocurrency=Ethereum).from_entropy(entropy).from_derivation(derivation)
 
 print(json.dumps(wallet.dumps(), indent=4, ensure_ascii=False))
